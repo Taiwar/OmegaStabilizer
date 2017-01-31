@@ -7,25 +7,20 @@ from PIL import ImageGrab
 
 
 def find_needle(needle_uri, haystack):
+    print("searching for: " + needle_uri)
     needle = cv2.imread(needle_uri)
-    # w, h = needle.shape[:-1]
+    w, h = needle.shape[:-1]
     matches = []
-    is_new_pt = False
 
     res = cv2.matchTemplate(haystack, needle, cv2.TM_CCOEFF_NORMED)
     threshold = .8
     loc = np.where(res >= threshold)
     for pt in zip(*loc[::-1]):
-        # cv2.rectangle(haystack, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+        print("got pt")
+        cv2.rectangle(haystack, pt, (pt[0] + w, pt[1] + h), (0, 0, 255), 2)
+        cv2.imwrite('imgs/result' + needle_uri[:-4] + '.png', haystack)
         matches.append(pt)
         if matches:
-            for match in matches:
-                if match[0]-2 <= pt[0] <= match[0]+2 and match[1]-2 <= pt[1] <= match[1]+2:
-                    is_new_pt = False
-                    break
-                else:
-                    is_new_pt = True
-            if is_new_pt:
                 print("found new pt:")
                 print(pt)
                 matches.append(pt)
